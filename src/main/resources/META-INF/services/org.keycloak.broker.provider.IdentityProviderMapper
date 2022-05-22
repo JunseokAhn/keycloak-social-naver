@@ -1,1 +1,1 @@
-moe.saru.keycloak.modules.baidu.BaiduUserAttributeMapper
+com.boot.keycloak.modules.naver.NaverUserAttributeMapper

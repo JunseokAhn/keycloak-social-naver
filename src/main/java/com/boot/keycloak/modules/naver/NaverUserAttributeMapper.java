@@ -11,18 +11,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package moe.saru.keycloak.modules.baidu;
+package com.boot.keycloak.modules.naver;
 
 import org.keycloak.broker.oidc.mappers.AbstractJsonUserAttributeMapper;
 
-/**
- * User attribute mapper.
- * 
- * @author dannyAAM
- */
-public class BaiduUserAttributeMapper extends AbstractJsonUserAttributeMapper {
 
-	private static final String[] cp = new String[] { BaiduIdentityProviderFactory.PROVIDER_ID };
+public class NaverUserAttributeMapper extends AbstractJsonUserAttributeMapper {
+
+	private static final String[] cp = new String[] { NaverIdentityProviderFactory.PROVIDER_ID };
 
 	@Override
 	public String[] getCompatibleProviders() {
@@ -31,7 +27,7 @@ public class BaiduUserAttributeMapper extends AbstractJsonUserAttributeMapper {
 
 	@Override
 	public String getId() {
-		return "baidu-user-attribute-mapper";
+		return "naver-user-attribute-mapper";
 	}
 
 }

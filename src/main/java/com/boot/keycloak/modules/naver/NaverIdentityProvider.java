@@ -12,11 +12,9 @@
  * limitations under the License.
  */
 
-package moe.saru.keycloak.modules.baidu;
+package com.boot.keycloak.modules.naver;
 
 import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.node.ArrayNode;
-import java.util.Iterator;
 import org.keycloak.broker.oidc.AbstractOAuth2IdentityProvider;
 import org.keycloak.broker.oidc.OAuth2IdentityProviderConfig;
 import org.keycloak.broker.oidc.mappers.AbstractJsonUserAttributeMapper;
@@ -27,17 +25,14 @@ import org.keycloak.broker.social.SocialIdentityProvider;
 import org.keycloak.events.EventBuilder;
 import org.keycloak.models.KeycloakSession;
 
-/**
- * @author dannyAAM
- */
-public class BaiduIdentityProvider extends AbstractOAuth2IdentityProvider implements SocialIdentityProvider {
+public class NaverIdentityProvider extends AbstractOAuth2IdentityProvider implements SocialIdentityProvider {
 
-	public static final String AUTH_URL = "http://openapi.baidu.com/oauth/2.0/authorize";
-	public static final String TOKEN_URL = "https://openapi.baidu.com/oauth/2.0/token";
-	public static final String PROFILE_URL = "https://openapi.baidu.com/rest/2.0/passport/users/getInfo";
+	public static final String AUTH_URL = "https://nid.naver.com/oauth2.0/authorize";
+	public static final String TOKEN_URL = "https://nid.naver.com/oauth2.0/token";
+	public static final String PROFILE_URL = "https://openapi.naver.com/v1/nid/me";
 	public static final String DEFAULT_SCOPE = "basic";
 
-	public BaiduIdentityProvider(KeycloakSession session, OAuth2IdentityProviderConfig config) {
+	public NaverIdentityProvider(KeycloakSession session, OAuth2IdentityProviderConfig config) {
 		super(session, config);
 		config.setAuthorizationUrl(AUTH_URL);
 		config.setTokenUrl(TOKEN_URL);
@@ -56,13 +51,30 @@ public class BaiduIdentityProvider extends AbstractOAuth2IdentityProvider implem
 
 	@Override
 	protected BrokeredIdentityContext extractIdentityFromProfile(EventBuilder event, JsonNode profile) {
-		BrokeredIdentityContext user = new BrokeredIdentityContext(getJsonProperty(profile, "userid"));
 
-		user.setUsername(getJsonProperty(profile, "userid"));
-		user.setName(getJsonProperty(profile, "realname"));
+		//키클락에서 Naver로그인 진행 > response 결과
+		JsonNode response = profile.get("response");
+		/*{
+			"resultcode":"00",
+			"message":"success",
+			"response":
+				{
+					"id":"osSjKfNDbgj6FyR7srJOOELTLV_lO-eba1XKQvlXsfg",
+					"email":"yourAddress@email.com",
+					"mobile":"010-0000-0000",
+					"mobile_e164":"+820000000000",
+					"name":"yourName",
+					"birthyear":"yourBirthYear"
+				}
+		}*/
+
+		//	가져온 결과 파싱 후 리턴
+		BrokeredIdentityContext user = new BrokeredIdentityContext(getJsonProperty(response, "id"));
+		user.setUsername(getJsonProperty(response, "name"));
+		user.setEmail(getJsonProperty(response, "email"));
+
 		user.setIdpConfig(getConfig());
 		user.setIdp(this);
-
 		AbstractJsonUserAttributeMapper.storeUserProfileForMapper(user, profile, getConfig().getAlias());
 
 		return user;
@@ -74,12 +86,17 @@ public class BaiduIdentityProvider extends AbstractOAuth2IdentityProvider implem
 	protected BrokeredIdentityContext doGetFederatedIdentity(String accessToken) {
 		try {
 			JsonNode profile = SimpleHttp.doGet(PROFILE_URL, session).param("access_token", accessToken).asJson();
-
+			System.out.println("PROFILE : " + profile);
 			BrokeredIdentityContext user = extractIdentityFromProfile(null, profile);
 
 			return user;
 		} catch (Exception e) {
-			throw new IdentityBrokerException("Could not obtain user profile from baidu.", e);
+			System.out.println("=====================EXCEPTION==============================");
+			System.out.println("ACCESS TOKEN : " + accessToken);
+			System.out.println("PROFILE_URL : " + PROFILE_URL);
+			System.out.println("SESSION : " + session);
+			System.out.println("=====================EXCEPTION==============================");
+			throw new IdentityBrokerException("Could not obtain user profile from naver.", e);
 		}
 	}
 

@@ -11,7 +11,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package moe.saru.keycloak.modules.baidu;
+package com.boot.keycloak.modules.naver;
 
 import org.keycloak.broker.oidc.OAuth2IdentityProviderConfig;
 import org.keycloak.broker.provider.AbstractIdentityProviderFactory;
@@ -19,21 +19,18 @@ import org.keycloak.models.IdentityProviderModel;
 import org.keycloak.broker.social.SocialIdentityProviderFactory;
 import org.keycloak.models.KeycloakSession;
 
-/**
- * @author dannyAAM
- */
-public class BaiduIdentityProviderFactory extends AbstractIdentityProviderFactory<BaiduIdentityProvider> implements SocialIdentityProviderFactory<BaiduIdentityProvider> {
+public class NaverIdentityProviderFactory extends AbstractIdentityProviderFactory<NaverIdentityProvider> implements SocialIdentityProviderFactory<NaverIdentityProvider> {
 
-    public static final String PROVIDER_ID = "baidu";
+    public static final String PROVIDER_ID = "naver";
 
     @Override
     public String getName() {
-        return "百度";
+        return "Naver";
     }
 
     @Override
-    public BaiduIdentityProvider create(KeycloakSession session, IdentityProviderModel model) {
-        return new BaiduIdentityProvider(session, new OAuth2IdentityProviderConfig(model));
+    public NaverIdentityProvider create(KeycloakSession session, IdentityProviderModel model) {
+        return new NaverIdentityProvider(session, new OAuth2IdentityProviderConfig(model));
     }
 
     @Override
